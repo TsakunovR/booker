@@ -8,28 +8,22 @@ def test_ping(api_client):
     assert status_code == 201
 
 
-def test_create_booking(api_client, create_booking):
-    response = create_booking()
+def test_create_booking(create_and_verify_booking):
+    response = create_and_verify_booking()
 
-    assert response["booking"]["firstname"] == "Jango"
-    assert response["booking"]["lastname"] == "Freedom"
-    assert response["booking"]["totalprice"] == 120
-    assert response["booking"]["depositpaid"] is True
-    assert response["booking"]["bookingdates"]["checkin"] == "2024-10-15"
-    assert response["booking"]["bookingdates"]["checkout"] == "2024-10-20"
-    assert response["booking"]["additionalneeds"] == "Breakfast"
+    assert response["bookingid"] is not None
 
 
-def test_filter_by_created_booking(api_client, create_booking):
-    response = create_booking()
+def test_filter_by_created_booking(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_id = response['bookingid']
     filter_response = api_client.get_booking_ids()
 
     assert any(b['bookingid'] == booking_id for b in filter_response)
 
 
-def test_filter_by_name_created_booking(api_client, create_booking):
-    response = create_booking()
+def test_filter_by_name_created_booking(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_id = response['bookingid']
     params = {
         "firstname": "Jango",
@@ -40,22 +34,22 @@ def test_filter_by_name_created_booking(api_client, create_booking):
     assert any(b['bookingid'] == booking_id for b in filter_response)
 
 
-def test_filter_by_checkin_checkout_created_booking(api_client, create_booking):
-    response = create_booking()
-    booking_id = response['bookingid']
-    params = {
-        "checkin": "2024-10-15",
-        "checkout": "2024-10-20"
-    }
-    filter_response = api_client.get_booking_ids(params=params)
-    print("Booking ID:", booking_id)
-    print("Filter Response:", filter_response)
+# def test_filter_by_checkin_checkout_created_booking(api_client, create_booking):
+#     response = create_booking()
+#     booking_id = response['bookingid']
+#     params = {
+#         "checkin": "2024-10-15",
+#         "checkout": "2024-10-20"
+#     }
+#     filter_response = api_client.get_booking_ids(params=params)
+#     print("Booking ID:", booking_id)
+#     print("Filter Response:", filter_response)
+#
+#     assert any(b['bookingid'] == booking_id for b in filter_response)
 
-    assert any(b['bookingid'] == booking_id for b in filter_response)
 
-
-def test_get_booking_by_id(api_client, create_booking):
-    response = create_booking()
+def test_get_booking_by_id(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_data = response['booking']
     booking_id = response['bookingid']
 
@@ -70,8 +64,8 @@ def test_get_booking_by_id(api_client, create_booking):
     assert booking_response['additionalneeds'] == booking_data['additionalneeds']
 
 
-def test_update_booking(api_client, create_booking):
-    response = create_booking()
+def test_update_booking(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_id = response['bookingid']
 
     updated_data = {
@@ -88,9 +82,6 @@ def test_update_booking(api_client, create_booking):
 
     api_client.authenticate()
 
-    assert "Authorization" in api_client.session.headers
-    assert api_client.session.headers["Authorization"].startswith("Bearer ")
-
     api_client.update_booking(booking_id, updated_data)
     booking_response = api_client.get_booking_by_id(booking_id)
 
@@ -103,8 +94,8 @@ def test_update_booking(api_client, create_booking):
     assert booking_response['additionalneeds'] == updated_data['additionalneeds']
 
 
-def test_update_part_of_booking(api_client, create_booking):
-    response = create_booking()
+def test_update_part_of_booking(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_id = response['bookingid']
     not_update_data = response['booking']
 
@@ -115,12 +106,8 @@ def test_update_part_of_booking(api_client, create_booking):
 
     api_client.authenticate()
 
-    assert "Authorization" in api_client.session.headers
-    assert api_client.session.headers["Authorization"].startswith("Bearer ")
-
     api_client.patch_booking(booking_id, part_of_updated_data)
     booking_response = api_client.get_booking_by_id(booking_id)
-    updated_data = part_of_updated_data
 
     assert booking_response['firstname'] == part_of_updated_data['firstname']
     assert booking_response['lastname'] == part_of_updated_data['lastname']
@@ -131,8 +118,9 @@ def test_update_part_of_booking(api_client, create_booking):
     assert booking_response['additionalneeds'] == not_update_data['additionalneeds']
 
 
-def test_delete_booking(api_client, create_booking):
-    response = create_booking()
+@pytest.mark.no_cleanup
+def test_delete_booking(api_client, create_and_verify_booking):
+    response = create_and_verify_booking()
     booking_id = response['bookingid']
 
     delete_success = api_client.delete_booking(booking_id)

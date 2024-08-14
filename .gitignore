@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+venv/
+.venv/
+.virtualenv/
+
+*.env
+.env.*
+
+.idea/
+
+.pytest_cache/
+
