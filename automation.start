@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ -d "reports" ]; then
+    rm -rf reports/*
+else
+    mkdir reports
+fi
+
+source venv/bin/activate
+
+pytest -v -s --alluredir reports
+
+allure generate reports
+
+allure serve reports
