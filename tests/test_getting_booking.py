@@ -17,9 +17,11 @@ def test_filter_by_created_booking(api_client, create_and_verify_booking):
 def test_filter_by_name_created_booking(api_client, create_and_verify_booking):
     response = create_and_verify_booking()
     booking_id = response['bookingid']
+    firstname = response['booking']['firstname']
+    lastname = response['booking']['lastname']
     params = {
-        "firstname": "Jango",
-        "lastname": "Freedom"
+        "firstname": firstname,
+        "lastname": lastname
     }
     filter_response = api_client.get_booking_ids(params=params)
 
@@ -29,7 +31,7 @@ def test_filter_by_name_created_booking(api_client, create_and_verify_booking):
 @allure.feature('Test getting booking')
 @allure.story('Positive: filter by booking dates, range is correct')
 def test_filter_by_checkin_checkout_created_booking(api_client, create_booking):
-    response, _ = create_booking()
+    response, _ = create_booking(use_fixed_dates=True)
     booking_id = response['bookingid']
     params = {
         "checkin": "2024-10-10",
@@ -53,8 +55,8 @@ def test_get_booking_by_id(api_client, create_and_verify_booking):
     assert booking_response['lastname'] == booking_data['lastname']
     assert booking_response['totalprice'] == booking_data['totalprice']
     assert booking_response['depositpaid'] == booking_data['depositpaid']
-    assert booking_response['bookingdates']['checkin'] == booking_data['bookingdates']['checkin']
-    assert booking_response['bookingdates']['checkout'] == booking_data['bookingdates']['checkout']
+    assert response["booking"]["bookingdates"]["checkin"] == booking_data["bookingdates"]["checkin"]
+    assert response["booking"]["bookingdates"]["checkout"] == booking_data["bookingdates"]["checkout"]
     assert booking_response['additionalneeds'] == booking_data['additionalneeds']
 
 
@@ -117,7 +119,7 @@ def test_filter_without_empty_parameters(api_client):
 @allure.feature('Test getting booking')
 @allure.story('Negative: filtering with bookingdates in created booking')
 def test_filter_by_checkin_checkout_of_created_booking(api_client, create_booking):
-    response, _ = create_booking()
+    response, _ = create_booking(use_fixed_dates=True)
     params = {
         "checkin": "2024-10-15",
         "checkout": "2024-10-20"

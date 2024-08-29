@@ -6,7 +6,7 @@ import pytest
 @allure.feature('Test patching booking')
 @allure.story('Positive: patching booking')
 def test_update_part_of_booking(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     not_update_data = response['booking']
 
@@ -32,7 +32,7 @@ def test_update_part_of_booking(api_client, create_and_verify_booking):
 @allure.feature('Test patching booking')
 @allure.story('Positive: patching booking with partially invalid data')
 def test_patch_booking_with_partially_invalid_data(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     not_update_data = response['booking']
     part_of_updated_invalid_data = {
@@ -59,7 +59,7 @@ def test_patch_booking_with_partially_invalid_data(api_client, create_and_verify
 @allure.feature('Test patching booking')
 @allure.story('Negative: patching booking without authorization')
 def test_patch_booking_without_authorization(api_client_no_auth, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     part_of_updated_data = {
         "firstname": "Unauthorized",
@@ -74,7 +74,7 @@ def test_patch_booking_without_authorization(api_client_no_auth, create_and_veri
 @allure.feature('Test patching booking')
 @allure.story('Negative: patching non-existent booking')
 def test_patch_non_existent_booking(api_client, create_and_verify_booking):
-    create_and_verify_booking()
+    create_and_verify_booking(use_fixed_dates=False)
     non_existent_booking_id = 9999999999
     part_of_updated_data = {
         "firstname": "John",
@@ -89,7 +89,7 @@ def test_patch_non_existent_booking(api_client, create_and_verify_booking):
 @allure.feature('Test patching booking')
 @allure.story('Negative: patching booking with non-existent field')
 def test_patch_booking_with_non_existent_field(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     invalid_field_data = {
         "non_existent_field": "SomeValue"

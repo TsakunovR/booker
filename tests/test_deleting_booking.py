@@ -7,8 +7,10 @@ import allure
 @allure.feature('Test deleting booking')
 @allure.story('Positive: deleting booking')
 def test_delete_booking(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
+
+    print(response)
 
     delete_success = api_client.delete_booking(booking_id)
 
@@ -32,7 +34,7 @@ def test_delete_non_existent_booking(api_client):
 @allure.feature('Test deleting booking')
 @allure.story('Negative: deleting booking without authorization')
 def test_delete_booking_without_authorization(api_client_no_auth, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
 
     with pytest.raises(requests.exceptions.HTTPError) as exc_info:
@@ -56,7 +58,7 @@ def test_delete_booking_with_invalid_id(api_client):
 @allure.story('Negative: deleting booking already deleted')
 @pytest.mark.no_cleanup
 def test_delete_booking_already_deleted(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
 
     delete_success = api_client.delete_booking(booking_id)

@@ -6,7 +6,7 @@ import pytest
 @allure.feature('Test updating booking')
 @allure.story('Positive: updating booking')
 def test_update_booking(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     updated_data = {
         "firstname": "John",
@@ -36,7 +36,7 @@ def test_update_booking(api_client, create_and_verify_booking):
 @allure.feature('Test updating booking')
 @allure.story('Negative: updating booking without authorization')
 def test_update_booking_without_authorization(api_client_no_auth, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     updated_data = {
         "firstname": "Unauthorized",
@@ -58,7 +58,7 @@ def test_update_booking_without_authorization(api_client_no_auth, create_and_ver
 @allure.feature('Test updating booking')
 @allure.story('Negative: updating booking with non-existent field')
 def test_update_booking_with_non_existent_field(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     invalid_field_data = {
         "non_existent_field": "InvalidData",
@@ -74,7 +74,7 @@ def test_update_booking_with_non_existent_field(api_client, create_and_verify_bo
 @allure.feature('Test updating booking')
 @allure.story('Negative: updating booking with invalid data')
 def test_update_booking_with_invalid_data(api_client, create_and_verify_booking):
-    response = create_and_verify_booking()
+    response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
     invalid_data = {
         "firstname": 123,

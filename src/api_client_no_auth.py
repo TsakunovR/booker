@@ -1,13 +1,13 @@
 import requests
-from src.config import BASE_URL, USERNAME, PASSWORD
+from src.config import configurations
 from src.endpoints import BOOKING_ENDPOINT
-from requests.auth import HTTPBasicAuth
 import allure
 
 
 class APIClientNoAuth:
-    def __init__(self):
-        self.base_url = BASE_URL
+    def __init__(self, environment='development'):
+        self.config = configurations.get(environment, configurations['development'])
+        self.base_url = self.config.BASE_URL
         self.session = requests.Session()
 
     def delete_booking(self, booking_id):

@@ -1,9 +1,27 @@
-BASE_URL = "https://restful-booker.herokuapp.com"
+class Config:
+    BASE_URL = "https://restful-booker.herokuapp.com"
+    USERNAME = "admin"
+    PASSWORD = "password123"
+    TIMEOUT = 5
 
-USERNAME = "admin"
-PASSWORD = "password123"
 
-TIMEOUT = 5
+class DevelopmentConfig(Config):
+    pass
+
+
+class StagingConfig(Config):
+    pass
+
+
+class ProductionConfig(Config):
+    pass
+
+
+configurations = {
+    'development': DevelopmentConfig,
+    'staging': StagingConfig,
+    'production': ProductionConfig
+}
 
 BOOKING_SCHEMA = {
     "type": "object",

@@ -24,15 +24,15 @@ def test_create_booking_with_custom_data(create_and_verify_booking):
         },
         "additionalneeds": "Dinner"
     }
-    response = create_and_verify_booking(booking_data)
+    response = create_and_verify_booking(booking_data, use_fixed_dates=False)
     booking = response["booking"]
 
     assert booking["firstname"] == booking_data["firstname"]
     assert booking["lastname"] == booking_data["lastname"]
     assert booking["totalprice"] == booking_data["totalprice"]
     assert booking["depositpaid"] == booking_data["depositpaid"]
-    assert booking["bookingdates"]["checkin"] == booking_data["bookingdates"]["checkin"]
-    assert booking["bookingdates"]["checkout"] == booking_data["bookingdates"]["checkout"]
+    assert response["booking"]["bookingdates"]["checkin"] == booking_data["bookingdates"]["checkin"]
+    assert response["booking"]["bookingdates"]["checkout"] == booking_data["bookingdates"]["checkout"]
     assert booking["additionalneeds"] == booking_data["additionalneeds"]
 
 

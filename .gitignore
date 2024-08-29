@@ -13,3 +13,5 @@ venv/
 
 .pytest_cache/
 
+allure-report/
+

@@ -5,7 +5,8 @@ from jsonschema import validate, ValidationError
 from src.config import BOOKING_SCHEMA
 import allure
 from requests.exceptions import HTTPError
-from datetime import datetime
+from datetime import datetime, timedelta
+from faker import Faker
 
 
 @pytest.fixture(scope="session")
@@ -15,23 +16,54 @@ def api_client():
     return client
 
 
+@pytest.fixture()
+def api_client_no_auth():
+    return APIClientNoAuth()
+
+
+fake = Faker()
+
+
 @pytest.fixture(scope="function")
-def create_booking(api_client, request):
-    booking_data = {
-        "firstname": "Jango",
-        "lastname": "Freedom",
-        "totalprice": 120,
-        "depositpaid": True,
-        "bookingdates": {
-        "checkin": "2024-10-15",
-        "checkout": "2024-10-20"
-            },
-        "additionalneeds": "Breakfast"
-    }
+def create_booking(api_client, request, booking_dates):
     created_bookings = []
 
-    def _create_booking(booking_data_override=None):
-        data = {**booking_data, **(booking_data_override or {})}
+    def _generate_random_booking_data(booking_data_override=None):
+        firstname = fake.first_name()
+        lastname = fake.last_name()
+        totalprice = fake.random_number(digits=3)
+        depositpaid = fake.boolean()
+        additionalneeds = fake.sentence()
+
+        data = {
+            "firstname": firstname,
+            "lastname": lastname,
+            "totalprice": totalprice,
+            "depositpaid": depositpaid,
+            "bookingdates": booking_dates,
+            "additionalneeds": additionalneeds
+        }
+
+        if booking_data_override:
+            data.update(booking_data_override)
+
+        return data
+
+    def _create_booking(booking_data_override=None, use_fixed_dates=False):
+        if booking_data_override and "bookingdates" in booking_data_override:
+            current_booking_dates = booking_data_override["bookingdates"]
+        else:
+            if use_fixed_dates:
+                current_booking_dates = {
+                    "checkin": "2024-10-15",
+                    "checkout": "2024-10-20"
+                }
+            else:
+                current_booking_dates = booking_dates
+
+        data = _generate_random_booking_data(booking_data_override)
+        data["bookingdates"] = current_booking_dates
+
         response = api_client.create_booking(data)
         created_bookings.append(response['bookingid'])
         return response, data
@@ -47,8 +79,8 @@ def create_booking(api_client, request):
 
 @pytest.fixture(scope="function")
 def create_and_verify_booking(create_booking):
-    def _create_and_verify_booking(booking_data_override=None, ignore_data_check=False):
-        response, original_data = create_booking(booking_data_override)
+    def _create_and_verify_booking(booking_data_override=None, ignore_data_check=False, use_fixed_dates=False):
+        response, original_data = create_booking(booking_data_override, use_fixed_dates)
         booking_data = response["booking"]
         try:
             with allure.step('Checking json schema'):
@@ -107,6 +139,13 @@ def convert_date_format():
     return _convert_date_format
 
 
-@pytest.fixture()
-def api_client_no_auth():
-    return APIClientNoAuth()
+@pytest.fixture
+def booking_dates():
+    today = datetime.today()
+    checkin_date = today + timedelta(days=10)
+    checkout_date = checkin_date + timedelta(days=5)
+
+    return {
+        "checkin": checkin_date.strftime('%Y-%m-%d'),
+        "checkout": checkout_date.strftime('%Y-%m-%d')
+    }

@@ -1,13 +1,17 @@
 import requests
-from src.config import BASE_URL, USERNAME, PASSWORD, TIMEOUT
+from src.config import configurations
 from src.endpoints import AUTH_ENDPOINT, BOOKING_ENDPOINT
 from requests.auth import HTTPBasicAuth
 import allure
 
 
 class APIClient:
-    def __init__(self):
-        self.base_url = BASE_URL
+    def __init__(self, environment='development'):
+        self.config = configurations.get(environment, configurations['development'])
+        self.base_url = self.config.BASE_URL
+        self.username = self.config.USERNAME
+        self.password = self.config.PASSWORD
+        self.timeout = self.config.TIMEOUT
         self.session = requests.Session()
 
     def ping(self):
@@ -22,8 +26,8 @@ class APIClient:
     def authenticate(self):
         with allure.step('Getting authenticate'):
             url = f"{self.base_url}{AUTH_ENDPOINT}"
-            payload = {"username": USERNAME, "password": PASSWORD}
-            response = self.session.post(url, json=payload, timeout=TIMEOUT)
+            payload = {"username": self.username, "password": self.password}
+            response = self.session.post(url, json=payload, timeout=self.timeout)
             response.raise_for_status()
         with allure.step('Checking status code'):
             assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"
@@ -61,12 +65,7 @@ class APIClient:
     def update_booking(self, booking_id, updated_data):
         with allure.step('Updating booking'):
             url = f"{self.base_url}{BOOKING_ENDPOINT}/{booking_id}"
-            response = self.session.put(url, json=updated_data, auth=HTTPBasicAuth(USERNAME, PASSWORD))
-        # print(f"PUT URL: {url}")
-        # print(f"Data: {updated_data}")
-        # print(f"Response Status Code: {response.status_code}")
-        # print(f"Response Content: {response.text}")
-        # print(f"Headers: {self.session.headers}")
+            response = self.session.put(url, json=updated_data, auth=HTTPBasicAuth(self.username, self.password))
         response.raise_for_status()
         with allure.step('Checking status code'):
             assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"
@@ -75,7 +74,7 @@ class APIClient:
     def patch_booking(self, booking_id, part_of_updated_data):
         with allure.step('Patching booking'):
             url = f"{self.base_url}{BOOKING_ENDPOINT}/{booking_id}"
-            response = self.session.patch(url, json=part_of_updated_data, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+            response = self.session.patch(url, json=part_of_updated_data, auth=HTTPBasicAuth(self.username, self.password))
             response.raise_for_status()
         with allure.step('Checking status code'):
             assert response.status_code == 200, f"Expected status 200 but got {response.status_code}"
@@ -87,7 +86,7 @@ class APIClient:
     def delete_booking(self, booking_id):
         with allure.step('Deleting booking'):
             url = f"{self.base_url}/booking/{booking_id}"
-            response = self.session.delete(url, auth=HTTPBasicAuth(USERNAME, PASSWORD))
+            response = self.session.delete(url, auth=HTTPBasicAuth(self.username, self.password))
             response.raise_for_status()
         with allure.step('Checking status code'):
             assert response.status_code == 201, f"Expected status 201 but got {response.status_code}"
