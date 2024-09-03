@@ -21,7 +21,15 @@ pipeline {
         stage('Install Allure') {
             steps {
                 sh 'apt-get update && apt-get install -y wget unzip'
-                sh 'wget -qO- https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.30.0/allure-commandline-2.30.0.zip | unzip -d /opt'
+                sh '''
+            wget -qO- https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.30.0/allure-commandline-2.30.0.zip -O allure.zip
+            if unzip -d /opt allure.zip; then
+                echo "Allure установлен успешно."
+            else
+                echo "Ошибка при установке Allure."
+                exit 1
+            fi
+            '''
                 sh 'ln -s /opt/allure-commandline-2.30.0/bin/allure /usr/local/bin/allure'
             }
         }
