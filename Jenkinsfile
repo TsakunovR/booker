@@ -17,30 +17,12 @@ pipeline {
             }
         }
 
-        stage('Check Homebrew Installation') {
-            steps {
-                script {
-                    sh '''
-                        if command -v brew &> /dev/null
-                        then
-                            echo "Homebrew is installed."
-                            brew --version
-                        else
-                            echo "Homebrew is not installed."
-                            exit 1
-                        fi
-                    '''
-                }
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 script {
                     sh 'python3 -m venv venv'
                     sh '. venv/bin/activate && pip install --upgrade pip'
                     sh '. venv/bin/activate && pip install -r requirements.txt'
-                    sh 'brew install allure'
                 }
             }
         }
