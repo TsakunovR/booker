@@ -1,56 +1,44 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.10-slim'
+            image 'python:3.12-slim'
             args '-u root'
         }
     }
-
-    environment {
-        ALLURE_COMMANDLINE = '/usr/local/bin/allure'
-    }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh 'python3 -m venv venv'
-                    sh '. venv/bin/activate && pip install --upgrade pip'
-                    sh '. venv/bin/activate && pip install -r requirements.txt'
-                }
+                sh 'python -m venv venv'
+                sh '. venv/bin/activate && pip install --upgrade pip'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
-
+        stage('Install Allure') {
+            steps {
+                sh 'apt-get update && apt-get install -y wget unzip'
+                sh 'wget -qO- https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.30.0/allure-commandline-2.30.0.zip | unzip -d /opt'
+                sh 'ln -s /opt/allure-commandline-2.30.0/bin/allure /usr/local/bin/allure'
+            }
+        }
         stage('Run Tests') {
             steps {
-                script {
-                    sh '. venv/bin/activate && pytest -v -s --alluredir reports'
-                }
+                sh '. venv/bin/activate && pytest -v -s --alluredir=reports'
             }
         }
-
         stage('Generate Allure Report') {
             steps {
-                script {
-                    sh '${ALLURE_COMMANDLINE} generate reports --clean -o allure-report'
-                }
+                sh 'allure generate reports -o allure-report'
             }
         }
     }
-
     post {
         always {
-            archiveArtifacts artifacts: 'allure-report/**', fingerprint: true
-
-            allure([
-                results: [[path: 'allure-report']]
-            ])
+            archiveArtifacts artifacts: 'allure-report/**', allowEmptyArchive: true
         }
     }
 }
