@@ -1,11 +1,17 @@
 FROM python:3.10
 
+RUN apt-get update && apt-get install -y wget unzip
+
+RUN wget -qO allure-commandline.zip https://github.com/allure-framework/allure2/releases/download/2.13.11/allure-2.13.11.zip && \
+    unzip allure-commandline.zip -d /opt/ && \
+    ln -sf /opt/allure-2.13.11/bin/allure /usr/local/bin/allure
+
 WORKDIR /app
+
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m venv venv && \
+    venv/bin/pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python3 -m venv venv
-
-CMD ["bash", "-c", "source venv/bin/activate && pytest -v -s --alluredir reports && allure generate reports && allure serve reports"]
+ENTRYPOINT ["bash", "-c", "venv/bin/pytest -v -s --alluredir reports && allure generate reports --clean -o allure-report && allure serve allure-report"]
