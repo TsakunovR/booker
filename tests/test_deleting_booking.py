@@ -10,8 +10,6 @@ def test_delete_booking(api_client, create_and_verify_booking):
     response = create_and_verify_booking(use_fixed_dates=False)
     booking_id = response['bookingid']
 
-    print(response)
-
     delete_success = api_client.delete_booking(booking_id)
 
     assert delete_success

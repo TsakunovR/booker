@@ -2,7 +2,7 @@ class Config:
     BASE_URL = "https://restful-booker.herokuapp.com"
     USERNAME = "admin"
     PASSWORD = "password123"
-    TIMEOUT = 5
+    TIMEOUT = 10
 
 
 class DevelopmentConfig(Config):
