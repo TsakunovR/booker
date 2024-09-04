@@ -42,10 +42,9 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    export PATH=$PATH:/opt/allure/bin
-
-                    allure --version
-                    allure generate reports -o allure-report
+                    cd /opt/allure/bin
+                    ./allure --version
+                    ./allure generate reports -o allure-report
                     '''
                 }
             }
