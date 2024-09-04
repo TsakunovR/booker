@@ -44,11 +44,12 @@ pipeline {
         }
         stage('Publish Allure Report') {
             steps {
+                steps {
                 allure([
-                    results: [[path: 'allure-report']],
-                    reportDirs: 'allure-report',
-                    reportFiles: 'index.html'
+                    results: [[path: 'allure-report']]
                 ])
+            }
+        }
             }
         }
     }
