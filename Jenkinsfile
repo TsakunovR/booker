@@ -13,9 +13,13 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh 'python -m venv venv'
-                sh '. venv/bin/activate && pip install --upgrade pip'
-                sh '. venv/bin/activate && pip install -r requirements.txt'
+                sh '''
+                    python -m venv venv
+                    . venv/bin/activate && pip install --upgrade pip
+                    . venv/bin/activate && pip install -r requirements.txt
+                '''
+                sh 'pwd'
+                sh 'ls -l'
             }
         }
         stage('Install Allure') {
@@ -29,11 +33,18 @@ pipeline {
                     ln -s /opt/allure-2.30.0/bin/allure /usr/local/bin/allure
                     rm allure.zip
                 '''
+                sh 'which allure'
+                sh 'allure --version'
             }
         }
         stage('Run Tests') {
             steps {
-                sh '. venv/bin/activate && pytest -v -s --alluredir=reports'
+                sh '''
+                    . venv/bin/activate
+                    pytest -v -s --alluredir=reports
+                '''
+                sh 'pwd'
+                sh 'ls -l reports'
             }
         }
         stage('Generate Allure Report') {
@@ -43,6 +54,8 @@ pipeline {
                     chmod -R 777 allure-report
                     allure generate reports --clean -o allure-report
                 '''
+                sh 'pwd'
+                sh 'ls -l allure-report'
             }
         }
         stage('Publish Allure Report') {
