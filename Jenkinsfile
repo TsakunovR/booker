@@ -40,7 +40,7 @@ pipeline {
         }
         stage('Generate Allure Report') {
             steps {
-                sh 'allure generate reports -o allure-report'
+                sh '/usr/local/bin/allure generate reports -o allure-report'
             }
         }
     }
