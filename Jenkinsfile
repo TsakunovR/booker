@@ -42,6 +42,15 @@ pipeline {
                 sh 'allure generate reports --clean -o allure-report'
             }
         }
+        stage('Publish Allure Report') {
+            steps {
+                allure([
+                    results: [[path: 'allure-report']],
+                    reportDirs: 'allure-report',
+                    reportFiles: 'index.html'
+                ])
+            }
+        }
     }
     post {
         always {
