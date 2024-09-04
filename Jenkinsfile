@@ -20,6 +20,9 @@ pipeline {
         }
         stage('Install Allure') {
             steps {
+                sh 'echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list.d/bullseye-backports.list'
+                sh 'apt-get update'
+                sh 'apt-get install -y wget unzip openjdk-11-jdk'
                 sh 'apt-get update && apt-get install -y wget unzip openjdk-11-jdk'
                 sh '''
                     wget -qO- https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.zip -O allure.zip
