@@ -35,6 +35,7 @@ pipeline {
                 '''
                 sh 'which allure'
                 sh 'allure --version'
+                sh 'java -version'
             }
         }
         stage('Run Tests') {
