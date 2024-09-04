@@ -1,6 +1,7 @@
-FROM python:3.12-buster
+FROM python:3.12
 
-RUN apt-get update && apt-get install -y wget unzip
+RUN apt-get update && apt-get install -y wget unzip openjdk-11-jdk && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN wget -qO allure-commandline.zip https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.zip && \
     unzip allure-commandline.zip -d /opt/ && \
@@ -8,7 +9,6 @@ RUN wget -qO allure-commandline.zip https://github.com/allure-framework/allure2/
     rm allure-commandline.zip
 
 WORKDIR /app
-
 COPY requirements.txt .
 RUN python3 -m venv venv && \
     venv/bin/pip install --no-cache-dir -r requirements.txt
