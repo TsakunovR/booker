@@ -38,13 +38,19 @@ pipeline {
         }
         stage('Generate Allure Report') {
             steps {
-                sh 'allure generate reports --clean -o allure-report'
+                sh '''
+                    mkdir -p allure-report
+                    chmod -R 777 allure-report
+                    allure generate reports --clean -o allure-report
+                '''
             }
         }
         stage('Publish Allure Report') {
             steps {
+                def allureReportPath = '/var/lib/jenkins/workspace/booker with pipline/allure-report'
+                sh "ls -l ${allureReportPath}"
                 allure([
-                    results: [[path: 'allure-report']]
+                    results: [[path: allureReportPath]]
                 ])
             }
         }
