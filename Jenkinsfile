@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.12'
-            args '-u root'
+            args '-u 0:0'
         }
     }
     stages {
@@ -49,6 +49,7 @@ pipeline {
             steps {
                 script {
                     def allureReportPath = 'allure-report'
+                    sh "chmod -R 777 ${allureReportPath}"
                     sh "ls -l ${allureReportPath}"
                     allure([
                         results: [[path: allureReportPath]]
