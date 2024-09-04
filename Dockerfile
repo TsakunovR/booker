@@ -5,9 +5,9 @@ RUN echo "deb http://deb.debian.org/debian bullseye main" > /etc/apt/sources.lis
 RUN apt-get update && apt-get install -y wget unzip openjdk-17-jdk && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget -qO allure-commandline.zip https://github.com/allure-framework/allure2/releases/download/2.20.0/allure-2.20.0.zip && \
+RUN wget -qO allure-commandline.zip https://github.com/allure-framework/allure2/releases/download/2.31.1/allure-2.31.1.zip && \
     unzip allure-commandline.zip -d /opt/ && \
-    ln -sf /opt/allure-2.20.0/bin/allure /usr/local/bin/allure && \
+    ln -sf /opt/allure-2.31.1/bin/allure /usr/local/bin/allure && \
     rm allure-commandline.zip
 
 WORKDIR /app
