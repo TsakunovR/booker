@@ -35,7 +35,6 @@ pipeline {
                 '''
                 sh 'which allure'
                 sh 'allure --version'
-                sh 'java -version'
             }
         }
         stage('Run Tests') {
@@ -50,33 +49,16 @@ pipeline {
         }
         stage('Generate Allure Report') {
             steps {
-                sh '''
-                    mkdir -p allure-report
-                    chmod -R 777 allure-report
-                    mkdir -p reports
-                    chmod -R 777 reports
-                    allure generate reports --clean -o allure-report
-                '''
-                sh 'pwd'
-                sh 'ls -l allure-report'
-            }
-        }
-        stage('Publish Allure Report') {
-            steps {
-                script {
-                    def allureReportPath = 'allure-report'
-                    sh "chmod -R 777 ${allureReportPath}"
-                    sh "ls -l ${allureReportPath}"
-                    allure([
-                        results: [[path: allureReportPath]]
-                    ])
-                }
+                allure([
+                    results: [[path: 'reports']],
+                    reportBuildPolicy: 'ALWAYS'
+                ])
             }
         }
     }
     post {
         always {
-            archiveArtifacts artifacts: 'allure-report/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
         }
     }
 }
