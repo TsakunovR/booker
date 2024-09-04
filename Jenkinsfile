@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.12' //
+            image 'python:3.12'
             args '-u root'
         }
     }
@@ -20,11 +20,10 @@ pipeline {
         }
         stage('Install Allure') {
             steps {
-                sh 'echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list.d/bullseye-backports.list'
-                sh 'apt-get update'
-                sh 'apt-get install -y wget unzip openjdk-17-jdk'
-                sh 'apt-get update && apt-get install -y wget unzip openjdk-17-jdk'
                 sh '''
+                    echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list.d/bullseye-backports.list
+                    apt-get update
+                    apt-get install -y wget unzip openjdk-17-jdk
                     wget -qO- https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.zip -O allure.zip
                     unzip -d /opt allure.zip
                     ln -s /opt/allure-2.30.0/bin/allure /usr/local/bin/allure
@@ -44,12 +43,9 @@ pipeline {
         }
         stage('Publish Allure Report') {
             steps {
-                steps {
                 allure([
                     results: [[path: 'allure-report']]
                 ])
-            }
-        }
             }
         }
     }
