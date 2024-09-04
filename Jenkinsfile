@@ -52,6 +52,8 @@ pipeline {
                 sh '''
                     mkdir -p allure-report
                     chmod -R 777 allure-report
+                    mkdir -p reports
+                    chmod -R 777 reports
                     allure generate reports --clean -o allure-report
                 '''
                 sh 'pwd'
