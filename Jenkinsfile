@@ -47,11 +47,13 @@ pipeline {
         }
         stage('Publish Allure Report') {
             steps {
-                def allureReportPath = '/var/lib/jenkins/workspace/booker with pipline/allure-report'
-                sh "ls -l ${allureReportPath}"
-                allure([
-                    results: [[path: allureReportPath]]
-                ])
+                script {
+                    def allureReportPath = 'allure-report'
+                    sh "ls -l ${allureReportPath}"
+                    allure([
+                        results: [[path: allureReportPath]]
+                    ])
+                }
             }
         }
     }
