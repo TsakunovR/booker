@@ -23,7 +23,7 @@ pipeline {
                     apt-get install -y wget unzip openjdk-17-jdk
                     wget -qO- https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.zip -O allure.zip
                     unzip -d /opt allure.zip
-                    ln -s /opt/allure-2.20.0/bin/allure /usr/local/bin/allure
+                    ln -s /opt/allure-2.30.0/bin/allure /usr/local/bin/allure
                     rm allure.zip
                 '''
             }
