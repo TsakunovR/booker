@@ -38,7 +38,6 @@ pipeline {
                         echo "/usr/local/bin is already in PATH."
                     fi
 
-                    # Проверка доступности allure
                     if command -v allure &> /dev/null; then
                         echo "Allure is installed and available in PATH."
                     else
@@ -56,10 +55,22 @@ pipeline {
                 '''
             }
         }
+        stage('Generate Allure Report') {
+            steps {
+                sh '''
+                    allure generate reports --clean -o allure-report
+                '''
+            }
+        }
         stage('Publish Allure Report') {
             steps {
-                allure([
-                    results: [[path: 'reports']]
+                sh '''
+                    cp -r allure-report ${WORKSPACE}/allure-report
+                '''
+                publishHTML([
+                    reportDir: 'allure-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Allure Report'
                 ])
             }
         }
