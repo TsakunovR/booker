@@ -70,9 +70,16 @@ pipeline {
                     cp -r allure-report/* ${WORKSPACE}/allure-report/
                 '''
                 publishHTML([
-                    reportDir: 'allure-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Allure Report'
+                    target: [
+                        reportDir: 'allure-report',
+                        reportFiles: 'index.html',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false,
+                        keepAll: true,
+                        reportFiles: 'index.html',
+                        reportName: 'Allure Report'
+                    ]
                 ])
             }
         }
