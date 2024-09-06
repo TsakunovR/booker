@@ -39,11 +39,11 @@ pipeline {
                     fi
 
                     # Проверка доступности allure
-                    if ! command -v allure &> /dev/null; then
+                    if command -v allure &> /dev/null; then
+                        echo "Allure is installed and available in PATH."
+                    else
                         echo "ERROR: Allure is not found in PATH."
                         exit 1
-                    else
-                        echo "Allure is installed and available in PATH."
                     fi
                 '''
             }
