@@ -64,11 +64,6 @@ pipeline {
         }
         stage('Publish Allure Report') {
             steps {
-                sh '''
-                    # Убедитесь, что директория workspace существует
-                    mkdir -p ${WORKSPACE}/allure-report
-                    cp -r allure-report/* ${WORKSPACE}/allure-report/
-                '''
                 publishHTML([
                     target: [
                         reportDir: 'allure-report',
@@ -76,8 +71,6 @@ pipeline {
                         keepAll: true,
                         alwaysLinkToLastBuild: true,
                         allowMissing: false,
-                        keepAll: true,
-                        reportFiles: 'index.html',
                         reportName: 'Allure Report'
                     ]
                 ])
